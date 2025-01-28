@@ -105,13 +105,8 @@ def main(logfile, job, protection=0):
     log_arm_params(job)
     check_fstab()
 
-    # Ripper type assessment for the various media types
-    # Type: dvd/bluray
-    if job.disctype in ["dvd", "bluray"]:
-        arm_ripper.rip_visual_media(have_dupes, job, logfile, protection)
-
     # Type: Music
-    elif job.disctype == "music":
+    if job.disctype == "music":
         # Try to recheck music disc for auto ident
         music_brainz.main(job)
         if utils.rip_music(job, logfile):
@@ -127,7 +122,7 @@ def main(logfile, job, protection=0):
         job.eject()
 
     # Type: Data
-    elif job.disctype == "data":
+    else:
         logging.info("Disc identified as data")
         if utils.rip_data(job):
             utils.notify(job, constants.NOTIFY_TITLE, f"Data disc: {job.label} copying complete. ")
@@ -135,9 +130,6 @@ def main(logfile, job, protection=0):
             logging.info("Data rip failed.  See previous errors.  Exiting.")
         job.eject()
 
-    # Type: undefined
-    else:
-        logging.info("Couldn't identify the disc type. Exiting without any action.")
 
 
 if __name__ == "__main__":
